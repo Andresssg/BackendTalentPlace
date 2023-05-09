@@ -11,3 +11,6 @@ class User(models.Model):
     email = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     rol = models.CharField(max_length=11)
+
+    def __str__(self):
+        return self.id
