@@ -7,6 +7,9 @@ router = routers.DefaultRouter()
 router.register(r"roles", views.RolView, 'roles')
 router.register(r"users", views.UserView, 'users')
 router.register(r"categories", views.CategoryView, 'categories')
+router.register(r"services", views.ServiceView, 'services')
+router.register(r"offeredservices", views.OfferedServiceView, 'offeredservices')
+router.register(r"hiredservices", views.HiredServiceView, 'hiredservices')
 
 urlpatterns = [
     #path("ruta",funcion a ejecutar, )

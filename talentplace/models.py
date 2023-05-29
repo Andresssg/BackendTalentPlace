@@ -2,14 +2,32 @@ from django.db import models
 
 # Create your models here.
 class Rol(models.Model):
-    id = models.AutoField(primary_key = True)
-    name = models.CharField(max_length = 50)
+    id_rol = models.AutoField(primary_key = True)
+    rol_name = models.CharField(max_length = 50)
     
     def __str__(self):
-        return self.name
+        return self.rol_name
+    
+class Category(models.Model):
+    id_category = models.AutoField(primary_key = True)
+    category_name = models.CharField(max_length = 75)
+
+    def __str__(self):
+        return self.category_name
+
+class Service(models.Model):
+    id_service = models.AutoField(primary_key = True)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    service_name = models.CharField(max_length = 50)
+    description = models.CharField(max_length = 200)
+    evidence_img = models.TextField(blank=True)
+    evidence_video = models.TextField(blank=True)
+    
+    def __str__(self):
+        return self.service_name
 
 class User(models.Model):
-    id = models.AutoField(primary_key = True)
+    id_user = models.AutoField(primary_key = True)
     name = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
     birthdate = models.DateField()
@@ -20,11 +38,22 @@ class User(models.Model):
     rol = models.ForeignKey(Rol , on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return self.id_user
     
-class Category(models.Model):
-    id = models.AutoField(primary_key = True)
-    name = models.CharField(max_length = 75)
+class OfferedService(models.Model):
+    id_offered_service = models.AutoField(primary_key = True)
+    service_id = models.ForeignKey(Service , on_delete=models.CASCADE)
+    offerer_id = models.ForeignKey(User , on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.id_offered_service
+
+class HiredService(models.Model):
+    id_hired_service = models.AutoField(primary_key = True)
+    applicant_id = models.ForeignKey(User , on_delete=models.CASCADE)
+    offered_service_id = models.ForeignKey(OfferedService , on_delete=models.CASCADE)
+    price = models.FloatField()
+    request_date = models.DateField()
+    
+    def __str__(self):
+        return self.id_hired_service
