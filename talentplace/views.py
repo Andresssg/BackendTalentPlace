@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django.contrib.auth.hashers import make_password
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .serializer import UserSerializer
 from .serializer import RolSerializer
 from .serializer import CategorySerializer
@@ -39,3 +42,12 @@ class HiredServiceView(viewsets.ModelViewSet):
     serializer_class = HiredServiceSerializer
     queryset = HiredService.objects.all()
 
+@api_view(['POST'])
+def user_register(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        data = serializer.validated_data
+        data['password'] = make_password(data['password'])
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
