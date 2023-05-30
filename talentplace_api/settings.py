@@ -134,3 +134,8 @@ CORS_ALLOWED_ORIGINS = []
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
+
+AUTHENTICATION_BACKENDS = [
+    'talentplace.backends.UserBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

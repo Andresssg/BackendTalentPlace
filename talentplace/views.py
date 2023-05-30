@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -51,3 +52,11 @@ def user_register(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def user_login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    user = authenticate(request, email=email, password=password)
+    return Response({'message': 'El usuario ha sido autenticado correctamente.'})

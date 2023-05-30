@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
 from talentplace import views
-from .views import user_register
+from .views import user_register, user_login
 
 router = routers.DefaultRouter()
 router.register(r"roles", views.RolView, 'roles')
@@ -18,5 +18,6 @@ urlpatterns = [
     #path("ruta",funcion a ejecutar, )
     path(f"{BASE_DIR}", include(router.urls)),
     path(f"{BASE_DIR}register", user_register, name='register'),
+    path(f"{BASE_DIR}login", user_login, name='login'),
     path("docs/", include_docs_urls(title="Talentplace API"))
 ]
