@@ -10,6 +10,7 @@ from .serializer import CategorySerializer
 from .serializer import ServiceSerializer
 from .serializer import OfferedServiceSerializer
 from .serializer import HiredServiceSerializer
+from rest_framework import views, status
 from .models import User
 from .models import Rol
 from .models import Category
@@ -62,4 +63,4 @@ def user_login(request):
     if user is not None:
         return Response({'message': 'Usuario autenticado correctamente.'})
     else:
-        return Response({'message': 'Usuario y/o contraseña incorrecta.'})
+        return Response({'message': 'Usuario y/o contraseña incorrecta.'}, status=status.HTTP_401_UNAUTHORIZED)
