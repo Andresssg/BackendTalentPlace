@@ -59,4 +59,7 @@ def user_login(request):
     password = request.data.get('password')
 
     user = authenticate(request, email=email, password=password)
-    return Response({'message': 'El usuario ha sido autenticado correctamente.'})
+    if user is not None:
+        return Response({'message': 'Usuario autenticado correctamente.'})
+    else:
+        return Response({'message': 'Usuario y/o contraseña incorrecta.'})
