@@ -97,9 +97,26 @@ def create_service(request):
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
-""" @api_view(['PUT'])
-def modify_service(request): """
-    
+@api_view(['PUT'])
+def modify_service(request):
+    servicio = Service.objects.get(id_service=request.data.get('id_service'))
+    data_request= request.data.copy()
+
+    if 'category' in request.data:
+        searchCategory = Category.objects.filter(category_name = request.data.get('category'))
+        firstCategory = searchCategory.first()
+        categoryId = firstCategory.id_category
+        data_request['category_id'] = categoryId
+
+    serializer = ServiceSerializer(servicio, data=data_request, partial=True)
+
+    if serializer.is_valid():
+        data = serializer.validated_data
+        for field, value in data.items():
+            setattr(servicio, field, value)
+        servicio.save()
+        return Response(serializer.data, status=201)
+    return Response({'error': 'Servicio no encontrado'}, status=404)
 
 @api_view(['PUT'])
 def change_password(request):
