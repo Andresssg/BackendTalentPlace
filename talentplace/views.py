@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
@@ -64,3 +65,20 @@ def user_login(request):
         return Response({'message': 'Usuario autenticado correctamente.'})
     else:
         return Response({'message': 'Usuario y/o contraseña incorrecta.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+@api_view(['POST'])
+def hire_service(request):
+    email = request.data.get("email")
+    offeredServiceId = request.data.get("offeredservice")
+    price = request.data.get("price")
+    if email is None or offeredServiceId is None or price is None:
+        return Response({'message': 'Los campos están incompletos'})
+    searchUser = User.objects.filter(email = f'{email}')
+    firstUser = searchUser.first()
+    applicantId = firstUser.id_user
+    serviceDate = date.today()
+
+    return Response({'message': 'hola hire',
+                     'applicantid': applicantId, 'offeredservicedid': offeredServiceId,
+                     'price': price, 'date': serviceDate})
+
