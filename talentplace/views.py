@@ -65,7 +65,7 @@ def user_login(request):
         return Response({'message': 'Usuario autenticado correctamente.'})
     else:
         return Response({'message': 'Usuario y/o contraseña incorrecta.'}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
 @api_view(['POST'])
 def hire_service(request):
     email = request.data.get("email")
@@ -82,3 +82,11 @@ def hire_service(request):
                      'applicantid': applicantId, 'offeredservicedid': offeredServiceId,
                      'price': price, 'date': serviceDate})
 
+@api_view(['POST'])
+def create_service(request):
+    serializer = ServiceSerializer(data=request.data)
+    if serializer.is_valid():
+        data = serializer.validated_data
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
