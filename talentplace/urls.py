@@ -18,8 +18,8 @@ urlpatterns = [
     path(f"{BASE_DIR}", include(router.urls)),
     path(f"{BASE_DIR}register", user_register, name='register'),
     path(f"{BASE_DIR}login", user_login, name='login'),
-    path(f"{BASE_DIR}createservice", create_service, name='createservice'),
-    path(f"{BASE_DIR}hireservice", hire_service, name='hireservice'),
+    path(f"{BASE_DIR}service/createservice", create_service, name='createservice'),
+    path(f"{BASE_DIR}service/hireservice", hire_service, name='hireservice'),
     path(f"{BASE_DIR}users/chagepassword", change_password, name='changepassword'),
     path("docs/", include_docs_urls(title="Talentplace API"))
 ]
