@@ -15,17 +15,6 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 
-class Service(models.Model):
-    id_service = models.AutoField(primary_key = True)
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
-    service_name = models.CharField(max_length = 50)
-    description = models.CharField(max_length = 200)
-    evidence_img = models.TextField(blank=True)
-    evidence_video = models.TextField(blank=True)
-    
-    def __str__(self):
-        return self.service_name
-
 class User(models.Model):
     id_user = models.AutoField(primary_key = True)
     name = models.CharField(max_length=50)
@@ -40,18 +29,23 @@ class User(models.Model):
     def __str__(self):
         return self.id_user
     
-class OfferedService(models.Model):
-    id_offered_service = models.AutoField(primary_key = True)
-    service_id = models.ForeignKey(Service , on_delete=models.CASCADE)
+class Service(models.Model):
+    id_service = models.AutoField(primary_key = True)
     offerer_id = models.ForeignKey(User , on_delete=models.CASCADE)
-
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    service_name = models.CharField(max_length = 50)
+    description = models.CharField(max_length = 200)
+    evidence_img = models.TextField(blank=True)
+    evidence_video = models.TextField(blank=True)
+    available = models.BooleanField(default=True)
+    
     def __str__(self):
-        return self.id_offered_service
+        return self.service_name
 
 class HiredService(models.Model):
     id_hired_service = models.AutoField(primary_key = True)
     applicant_id = models.ForeignKey(User , on_delete=models.CASCADE)
-    offered_service_id = models.ForeignKey(OfferedService , on_delete=models.CASCADE)
+    service_id = models.ForeignKey(Service , on_delete=models.CASCADE)
     price = models.FloatField()
     request_date = models.DateField()
     

@@ -9,7 +9,6 @@ router.register(r"roles", RolView, 'roles')
 router.register(r"users", UserView, 'users')
 router.register(r"categories", CategoryView, 'categories')
 router.register(r"services", ServiceView, 'services')
-router.register(r"offeredservices", OfferedServiceView, 'offeredservices')
 router.register(r"hiredservices", HiredServiceView, 'hiredservices')
 
 BASE_DIR = "api/v1/"

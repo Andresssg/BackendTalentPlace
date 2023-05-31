@@ -4,7 +4,6 @@ from .models import Rol
 from .models import Category
 from .models import Service
 from .models import HiredService
-from .models import OfferedService
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,11 +25,6 @@ class RolSerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = "__all__"
-
-class OfferedServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OfferedService
         fields = "__all__"
         
 class HiredServiceSerializer(serializers.ModelSerializer):

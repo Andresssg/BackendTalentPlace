@@ -6,7 +6,8 @@ def create_roles(apps, schema_editor):
     Rol = apps.get_model('talentplace', 'Rol')
     Rol.objects.bulk_create([
         Rol(rol_name='OFERTANTE'),
-        Rol(rol_name='SOLICITANTE')
+        Rol(rol_name='SOLICITANTE'),
+        Rol(rol_name='ADMIN')
     ])
 
 def create_categories(apps, schema_editor):
