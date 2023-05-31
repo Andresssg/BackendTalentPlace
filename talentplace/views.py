@@ -84,9 +84,20 @@ def hire_service(request):
 
 @api_view(['POST'])
 def create_service(request):
-    serializer = ServiceSerializer(data=request.data)
+    searchUser = User.objects.filter(email = request.data.get('offerer_id'))
+    firstUser = searchUser.first()
+    offererId = firstUser.id_user
+
+    searchCategory = Category.objects.filter(category_name = request.data.get('category_id'))
+    firstCategory = searchCategory.first()
+    categoryId = firstCategory.id_category
+
+    data_request= request.data.copy()
+    data_request['offerer_id'] = offererId
+    data_request['category_id'] = categoryId
+
+    serializer = ServiceSerializer(data=data_request)
     if serializer.is_valid():
-        data = serializer.validated_data
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
