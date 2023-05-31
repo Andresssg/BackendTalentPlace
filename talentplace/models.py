@@ -33,7 +33,7 @@ class User(models.Model):
     birthdate = models.DateField()
     phone = models.CharField(max_length=20)
     gender = models.CharField(max_length=11)
-    email = models.CharField(max_length=100)
+    email = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
     rol = models.ForeignKey(Rol , on_delete=models.CASCADE)
 
