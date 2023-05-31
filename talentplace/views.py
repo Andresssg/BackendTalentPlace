@@ -96,6 +96,7 @@ def create_service(request):
     data_request= request.data.copy()
     data_request['offerer_id'] = offererId
     data_request['category_id'] = categoryId
+    data_request['available'] = True
 
     serializer = ServiceSerializer(data=data_request)
     if serializer.is_valid():
