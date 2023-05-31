@@ -85,3 +85,21 @@ def create_service(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['PUT'])
+def change_password(request):
+    new_password = request.data.get('newpassword')
+    email = request.data.get('email')
+
+    if not email or not new_password:
+        return Response({'message': 'Los campos estan incompletos'}, status=400)
+
+    search_user = User.objects.filter(email=email)
+    first_user = search_user.first()
+    if first_user:
+        serializer = UserSerializer(first_user, data={'password': make_password(new_password)}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
+    return Response({'error': 'Usuario no encontrado'}, status=404)
