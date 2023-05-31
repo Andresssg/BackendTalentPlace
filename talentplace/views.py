@@ -64,18 +64,24 @@ def user_login(request):
 @api_view(['POST'])
 def hire_service(request):
     email = request.data.get("email")
-    idService = request.data.get("id_service")
+    idService = request.data.get("service_id")
     price = request.data.get("price")
-    if email is None or idService is None or price is None:
+    if not email or not idService or not price:
         return Response({'message': 'Los campos están incompletos'})
     searchUser = User.objects.filter(email = f'{email}')
     firstUser = searchUser.first()
     applicantId = firstUser.id_user
     serviceDate = date.today()
 
-    return Response({'message': 'hola hire',
-                     'applicantid': applicantId, 'id_service': idService,
-                     'price': price, 'date': serviceDate})
+    data_request = request.data.copy()
+    data_request['applicant_id'] = applicantId
+    data_request['request_date'] = serviceDate
+
+    serializer = HiredServiceSerializer(data=data_request)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
 def create_service(request):
@@ -96,10 +102,6 @@ def create_service(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
-
-""" @api_view(['PUT'])
-def modify_service(request): """
-    
 
 @api_view(['PUT'])
 def change_password(request):
