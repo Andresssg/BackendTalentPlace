@@ -64,9 +64,9 @@ def user_login(request):
 @api_view(['POST'])
 def hire_service(request):
     email = request.data.get("email")
-    offeredServiceId = request.data.get("offeredservice")
+    idService = request.data.get("id_service")
     price = request.data.get("price")
-    if email is None or offeredServiceId is None or price is None:
+    if email is None or idService is None or price is None:
         return Response({'message': 'Los campos están incompletos'})
     searchUser = User.objects.filter(email = f'{email}')
     firstUser = searchUser.first()
@@ -74,16 +74,16 @@ def hire_service(request):
     serviceDate = date.today()
 
     return Response({'message': 'hola hire',
-                     'applicantid': applicantId, 'offeredservicedid': offeredServiceId,
+                     'applicantid': applicantId, 'id_service': idService,
                      'price': price, 'date': serviceDate})
 
 @api_view(['POST'])
 def create_service(request):
-    searchUser = User.objects.filter(email = request.data.get('offerer_id'))
+    searchUser = User.objects.filter(email = request.data.get('email'))
     firstUser = searchUser.first()
     offererId = firstUser.id_user
 
-    searchCategory = Category.objects.filter(category_name = request.data.get('category_id'))
+    searchCategory = Category.objects.filter(category_name = request.data.get('category'))
     firstCategory = searchCategory.first()
     categoryId = firstCategory.id_category
 
@@ -97,8 +97,8 @@ def create_service(request):
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
-@api_view(['PUT'])
-def modify_service(request):
+""" @api_view(['PUT'])
+def modify_service(request): """
     
 
 @api_view(['PUT'])
