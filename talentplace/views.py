@@ -98,6 +98,10 @@ def create_service(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['PUT'])
+def modify_service(request):
+    
+
+@api_view(['PUT'])
 def change_password(request):
     new_password = request.data.get('newpassword')
     email = request.data.get('email')
