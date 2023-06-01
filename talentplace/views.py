@@ -1,24 +1,22 @@
 from datetime import date
 from functools import wraps
 import base64
-from django.shortcuts import render
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
-from rest_framework import viewsets
-from rest_framework.decorators import api_view, authentication_classes
-from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import TokenError, AccessToken
+
 from .serializer import UserSerializer
 from .serializer import RolSerializer
 from .serializer import CategorySerializer
 from .serializer import ServiceSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer import TokenSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import AuthenticationFailed
-import jwt
 from .serializer import HiredServiceSerializer
-from rest_framework import views, status
+
 from .models import User
 from .models import Rol
 from .models import Category
@@ -46,6 +44,27 @@ class ServiceView(viewsets.ModelViewSet):
 class HiredServiceView(viewsets.ModelViewSet):
     serializer_class = HiredServiceSerializer
     queryset = HiredService.objects.all()
+
+from rest_framework.decorators import api_view
+
+def check_auth():
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            tokenSent = request.META.get('HTTP_TOKEN')
+            if tokenSent is None:
+                return Response({'message': 'Inicie sesión.'}, status=401)
+
+            try:
+                access_token = AccessToken(tokenSent)
+                access_token.verify()
+                print(access_token['email'])
+            except TokenError:
+                return Response({'message': 'Token inválido o expirado.'}, status=401)
+            
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 def role_required(rol_id):
     def decorator(view_func):
@@ -76,7 +95,6 @@ def user_login(request):
     password = request.data.get('password')
 
     user = authenticate(request, email=email, password=password)
-    serializer = UserSerializer(user)
 
     if user is None:
         return Response({'message': 'Usuario y/o contraseña incorrecta.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -87,6 +105,7 @@ def user_login(request):
     return Response({"token": token})
 
 @api_view(['POST'])
+@check_auth()
 @role_required([1, 3])
 def hire_service(request):
     email = request.data.get("email")
@@ -110,6 +129,7 @@ def hire_service(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
+@check_auth()
 @role_required([1, 3])
 def create_service(request):
     searchUser = User.objects.filter(email = request.data.get('email'))
@@ -138,6 +158,7 @@ def create_service(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['PUT'])
+@check_auth()
 @role_required([1, 3])
 def modify_service(request):
     servicio = Service.objects.get(id_service=request.data.get('id_service'))
@@ -165,6 +186,7 @@ def modify_service(request):
     return Response({'error': 'Servicio no encontrado'}, status=404)
 
 @api_view(['PUT'])
+@check_auth()
 def change_password(request):
     new_password = request.data.get('newpassword')
     email = request.data.get('email')
@@ -183,6 +205,7 @@ def change_password(request):
     return Response({'error': 'Usuario no encontrado'}, status=404)
 
 @api_view(['DELETE'])
+@check_auth()
 @role_required([1, 3])
 def delete_service(request):
     serviceId = request.data.get('id_service')
