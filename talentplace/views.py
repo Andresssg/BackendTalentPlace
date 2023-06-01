@@ -1,4 +1,6 @@
 from datetime import date
+from functools import wraps
+import base64
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
@@ -39,6 +41,19 @@ class ServiceView(viewsets.ModelViewSet):
 class HiredServiceView(viewsets.ModelViewSet):
     serializer_class = HiredServiceSerializer
     queryset = HiredService.objects.all()
+
+def role_required(rol_id):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            searchUser = User.objects.filter(email = request.data.get('email'))
+            firstUser = searchUser.first()
+            rol = firstUser.rol
+            if rol.id_rol not in rol_id:
+                return Response({'message': 'Usuario no autorizado.'}, status=401)
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 @api_view(['POST'])
 def user_register(request):
@@ -84,6 +99,7 @@ def hire_service(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
+@role_required([1, 3])
 def create_service(request):
     searchUser = User.objects.filter(email = request.data.get('email'))
     firstUser = searchUser.first()
@@ -94,6 +110,12 @@ def create_service(request):
     categoryId = firstCategory.id_category
 
     data_request= request.data.copy()
+
+    if 'evidence_img' in request.data:
+        imagen_binaria = request.FILES['evidence_img'].read()
+        imagen_base64 = base64.b64encode(imagen_binaria).decode('utf-8')
+        data_request['evidence_img'] = imagen_base64
+
     data_request['offerer_id'] = offererId
     data_request['category_id'] = categoryId
     data_request['available'] = True
@@ -115,6 +137,11 @@ def modify_service(request):
         categoryId = firstCategory.id_category
         data_request['category_id'] = categoryId
 
+    if 'evidence_img' in request.data:
+        imagen_binaria = request.FILES['evidence_img'].read()
+        imagen_base64 = base64.b64encode(imagen_binaria).decode('utf-8')
+        data_request['evidence_img'] = imagen_base64
+        
     serializer = ServiceSerializer(servicio, data=data_request, partial=True)
 
     if serializer.is_valid():
