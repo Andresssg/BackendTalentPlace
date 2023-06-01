@@ -45,8 +45,6 @@ class HiredServiceView(viewsets.ModelViewSet):
     serializer_class = HiredServiceSerializer
     queryset = HiredService.objects.all()
 
-from rest_framework.decorators import api_view
-
 def check_auth():
     def decorator(view_func):
         @wraps(view_func)
@@ -106,7 +104,7 @@ def user_login(request):
 
 @api_view(['POST'])
 @check_auth()
-@role_required([1, 3])
+@role_required([2, 3])
 def hire_service(request):
     email = request.data.get("email")
     idService = request.data.get("service_id")
