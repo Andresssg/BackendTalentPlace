@@ -180,7 +180,7 @@ def delete_service(request):
     search_service = Service.objects.filter(id_service=serviceId)
     first_service = search_service.first()
     if first_service:
-        serializer = UserSerializer(first_service, data={'available': False}, partial=True)
+        serializer = ServiceSerializer(first_service, data={'available': False}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
