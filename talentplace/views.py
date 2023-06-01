@@ -142,3 +142,20 @@ def change_password(request):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
     return Response({'error': 'Usuario no encontrado'}, status=404)
+
+@api_view(['DELETE'])
+def delete_service(request):
+    serviceId = request.data.get('id_service')
+
+    if not serviceId:
+        return Response({'message': 'Los campos están incompletos'}, status=400)
+
+    search_service = Service.objects.filter(id_service=serviceId)
+    first_service = search_service.first()
+    if first_service:
+        serializer = UserSerializer(first_service, data={'available': False}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
+    return Response({'error': 'Servicio no encontrado'}, status=404)
