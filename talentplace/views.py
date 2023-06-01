@@ -77,6 +77,7 @@ def user_login(request):
         return Response({'message': 'Usuario y/o contraseña incorrecta.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
+@role_required([1, 3])
 def hire_service(request):
     email = request.data.get("email")
     idService = request.data.get("service_id")
@@ -127,6 +128,7 @@ def create_service(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['PUT'])
+@role_required([1, 3])
 def modify_service(request):
     servicio = Service.objects.get(id_service=request.data.get('id_service'))
     data_request= request.data.copy()
@@ -141,7 +143,7 @@ def modify_service(request):
         imagen_binaria = request.FILES['evidence_img'].read()
         imagen_base64 = base64.b64encode(imagen_binaria).decode('utf-8')
         data_request['evidence_img'] = imagen_base64
-        
+
     serializer = ServiceSerializer(servicio, data=data_request, partial=True)
 
     if serializer.is_valid():
@@ -171,6 +173,7 @@ def change_password(request):
     return Response({'error': 'Usuario no encontrado'}, status=404)
 
 @api_view(['DELETE'])
+@role_required([1, 3])
 def delete_service(request):
     serviceId = request.data.get('id_service')
 
