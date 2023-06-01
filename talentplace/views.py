@@ -5,13 +5,18 @@ from django.shortcuts import render
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from .serializer import UserSerializer
 from .serializer import RolSerializer
 from .serializer import CategorySerializer
 from .serializer import ServiceSerializer
-
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializer import TokenSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
+import jwt
 from .serializer import HiredServiceSerializer
 from rest_framework import views, status
 from .models import User
@@ -71,10 +76,15 @@ def user_login(request):
     password = request.data.get('password')
 
     user = authenticate(request, email=email, password=password)
-    if user is not None:
-        return Response({'message': 'Usuario autenticado correctamente.'})
-    else:
+    serializer = UserSerializer(user)
+
+    if user is None:
         return Response({'message': 'Usuario y/o contraseña incorrecta.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    tokenSerializer = TokenSerializer()
+    claim_token = tokenSerializer.get_token(user)
+    token = str(claim_token.access_token)
+    return Response({"token": token})
 
 @api_view(['POST'])
 @role_required([1, 3])

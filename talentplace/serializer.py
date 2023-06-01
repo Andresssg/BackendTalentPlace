@@ -3,6 +3,7 @@ from .models import User
 from .models import Rol
 from .models import Category
 from .models import Service
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import HiredService
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,3 +32,13 @@ class HiredServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = HiredService
         fields = "__all__"
+
+class TokenSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['name'] = user.name
+        token['lastname'] = user.lastname
+        token['email'] = user.email
+        token['rol'] = user.rol.id_rol
+        return token
