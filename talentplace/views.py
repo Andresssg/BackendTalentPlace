@@ -199,7 +199,7 @@ def change_password(request):
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Contraseña cambiada exitosamente'}, status=200)
-        return Response({'message': 'Problema al cambiar la contraseña', 'errores': serializer.errors}, status=400)
+        return Response({'message': 'Problema al cambiar la contraseña', 'errors': serializer.errors}, status=400)
     return Response({'message': 'Usuario no encontrado'}, status=404)
 
 @api_view(['DELETE'])
