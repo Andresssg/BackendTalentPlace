@@ -150,7 +150,7 @@ def create_service(request):
             image_type = img.content_type
             imagen_binaria = img.read()
             imagen_base64_data = base64.b64encode(imagen_binaria).decode('utf-8')
-            imagen_base64 = f"'data:{image_type};base64,{imagen_base64_data}'"
+            imagen_base64 = f"data:{image_type};base64,{imagen_base64_data}"
             print(imagen_base64)
             data_request['evidence_img'] = imagen_base64
         except IOError:
@@ -200,8 +200,7 @@ def modify_service(request):
             image_type = img.content_type
             imagen_binaria = img.read()
             imagen_base64_data = base64.b64encode(imagen_binaria).decode('utf-8')
-            imagen_base64 = f"'data:{image_type};base64,{imagen_base64_data}'"
-            print(imagen_base64)
+            imagen_base64 = f"data:{image_type};base64,{imagen_base64_data}"
             data_request['evidence_img'] = imagen_base64
         except IOError:
             return HttpResponseBadRequest('No se pudo abrir la imagen.')
