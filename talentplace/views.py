@@ -151,7 +151,6 @@ def create_service(request):
             imagen_binaria = img.read()
             imagen_base64_data = base64.b64encode(imagen_binaria).decode('utf-8')
             imagen_base64 = f"data:{image_type};base64,{imagen_base64_data}"
-            print(imagen_base64)
             data_request['evidence_img'] = imagen_base64
         except IOError:
             return HttpResponseBadRequest('No se pudo abrir la imagen.')
@@ -187,6 +186,14 @@ def get_services_by_user(request):
 def modify_service(request):
     servicio = Service.objects.get(id_service=request.data.get('id_service'))
     data_request= request.data.copy()
+
+    offerer_id = servicio.offerer_id.id_user
+    tokenSent = request.META.get('HTTP_TOKEN')
+    access_token = AccessToken(tokenSent)
+    id_user = access_token.get('id_user')
+
+    if id_user != offerer_id:
+        return Response({'message': 'No tienes ningún servicio con ese id'}, status=404)
 
     if 'category' in request.data:
         searchCategory = Category.objects.filter(category_name = request.data.get('category'))
