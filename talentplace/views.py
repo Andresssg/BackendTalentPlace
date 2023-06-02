@@ -67,10 +67,10 @@ def role_required(rol_id):
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
-            searchUser = User.objects.filter(email = request.data.get('email'))
-            firstUser = searchUser.first()
-            rol = firstUser.rol
-            if rol.id_rol not in rol_id:
+            tokenSent = request.META.get('HTTP_TOKEN')
+            access_token = AccessToken(tokenSent)
+            rol = access_token.get('rol')
+            if rol not in rol_id:
                 return Response({'message': 'Usuario no autorizado.'}, status=401)
             return view_func(request, *args, **kwargs)
         return wrapper
@@ -154,6 +154,21 @@ def create_service(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+@check_auth()
+@role_required([1, 3])
+def get_services_by_user(request):
+    username = request.GET.get('username')
+    if not username:
+        return Response({"message": "No se proporcionaron parámetros de consulta"}, status=400)
+    serachUser = User.objects.filter(username=username)
+    firstUser = serachUser.first()
+    idUser = firstUser.id_user
+    searchServices = Service.objects.filter(offerer_id=idUser)
+    serializer = ServiceSerializer(searchServices, many=True)
+    return Response({'services': serializer.data}, status=200)
+    
 
 @api_view(['PUT'])
 @check_auth()
