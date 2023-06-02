@@ -100,7 +100,8 @@ def user_login(request):
     tokenSerializer = TokenSerializer()
     claim_token = tokenSerializer.get_token(user)
     token = str(claim_token.access_token)
-    return Response({"token": token})
+    resUser = UserSerializer(user)
+    return Response({"token": token, "user": resUser.data},status=200)
 
 @api_view(['POST'])
 @check_auth()
