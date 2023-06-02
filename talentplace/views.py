@@ -186,13 +186,15 @@ def get_services_by_user(request):
 def modify_service(request):
     servicio = Service.objects.get(id_service=request.data.get('id_service'))
     data_request= request.data.copy()
-
-    offerer_id = servicio.offerer_id.id_user
+    
     tokenSent = request.META.get('HTTP_TOKEN')
     access_token = AccessToken(tokenSent)
-    id_user = access_token.get('id_user')
+    rol_client = access_token.get('rol')
+    id_user_client = access_token.get('id_user')
 
-    if id_user != offerer_id:
+    offerer_id = servicio.offerer_id.id_user
+
+    if id_user_client != offerer_id and rol_client != 3:
         return Response({'message': 'No tienes ningún servicio con ese id'}, status=404)
 
     if 'category' in request.data:
@@ -245,10 +247,18 @@ def change_password(request):
 @check_auth()
 @role_required([1, 3])
 def delete_service(request):
+    servicio = Service.objects.get(id_service=request.data.get('id_service'))
     serviceId = request.data.get('id_service')
 
-    if not serviceId:
-        return Response({'message': 'Los campos están incompletos'}, status=400)
+    tokenSent = request.META.get('HTTP_TOKEN')
+    access_token = AccessToken(tokenSent)
+    rol_client = access_token.get('rol')
+    id_user_client = access_token.get('id_user')
+
+    offerer_id = servicio.offerer_id.id_user
+
+    if id_user_client != offerer_id and rol_client != 3:
+        return Response({'message': 'No tienes ningún servicio con ese id'}, status=404)
 
     search_service = Service.objects.filter(id_service=serviceId)
     first_service = search_service.first()
