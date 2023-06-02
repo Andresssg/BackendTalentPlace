@@ -10,6 +10,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import TokenError, AccessToken
 
+from django.http import HttpResponseBadRequest
+from django.core.files.images import ImageFile
+
+
 from .serializer import UserSerializer
 from .serializer import RolSerializer
 from .serializer import CategorySerializer
@@ -141,9 +145,16 @@ def create_service(request):
     data_request= request.data.copy()
 
     if 'evidence_img' in request.data:
-        imagen_binaria = request.FILES['evidence_img'].read()
-        imagen_base64 = base64.b64encode(imagen_binaria).decode('utf-8')
-        data_request['evidence_img'] = imagen_base64
+        try:
+            img = request.FILES['evidence_img']
+            image_type = img.content_type
+            imagen_binaria = img.read()
+            imagen_base64_data = base64.b64encode(imagen_binaria).decode('utf-8')
+            imagen_base64 = f"'data:{image_type};base64,{imagen_base64_data}'"
+            print(imagen_base64)
+            data_request['evidence_img'] = imagen_base64
+        except IOError:
+            return HttpResponseBadRequest('No se pudo abrir la imagen.')
 
     data_request['offerer_id'] = offererId
     data_request['category_id'] = categoryId
@@ -184,9 +195,16 @@ def modify_service(request):
         data_request['category_id'] = categoryId
 
     if 'evidence_img' in request.data:
-        imagen_binaria = request.FILES['evidence_img'].read()
-        imagen_base64 = base64.b64encode(imagen_binaria).decode('utf-8')
-        data_request['evidence_img'] = imagen_base64
+        try:
+            img = request.FILES['evidence_img']
+            image_type = img.content_type
+            imagen_binaria = img.read()
+            imagen_base64_data = base64.b64encode(imagen_binaria).decode('utf-8')
+            imagen_base64 = f"'data:{image_type};base64,{imagen_base64_data}'"
+            print(imagen_base64)
+            data_request['evidence_img'] = imagen_base64
+        except IOError:
+            return HttpResponseBadRequest('No se pudo abrir la imagen.')
 
     serializer = ServiceSerializer(servicio, data=data_request, partial=True)
 
