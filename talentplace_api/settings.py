@@ -131,6 +131,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 #TODO:Autorizar cors para el front
 CORS_ALLOWED_ORIGINS = []
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = [
+    'token',  # Agrega 'token' a la lista de encabezados permitidos
+    'content-type',
+]
 
 # Auto documentar API con coreapi y django rest
 REST_FRAMEWORK = {

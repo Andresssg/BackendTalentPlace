@@ -56,7 +56,6 @@ def check_auth():
             try:
                 access_token = AccessToken(tokenSent)
                 access_token.verify()
-                print(access_token['email'])
             except TokenError:
                 return Response({'message': 'Token inválido o expirado.'}, status=401)
             
@@ -199,9 +198,9 @@ def change_password(request):
         serializer = UserSerializer(first_user, data={'password': make_password(new_password)}, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=400)
-    return Response({'error': 'Usuario no encontrado'}, status=404)
+            return Response({'message': 'Contraseña cambiada exitosamente'}, status=200)
+        return Response({'message': 'Problema al cambiar la contraseña', 'errores': serializer.errors}, status=400)
+    return Response({'message': 'Usuario no encontrado'}, status=404)
 
 @api_view(['DELETE'])
 @check_auth()
