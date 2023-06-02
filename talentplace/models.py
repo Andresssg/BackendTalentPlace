@@ -17,6 +17,7 @@ class Category(models.Model):
 
 class User(models.Model):
     id_user = models.AutoField(primary_key = True)
+    username = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
     lastname = models.CharField(max_length=50)
     birthdate = models.DateField()

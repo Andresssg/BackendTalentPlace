@@ -17,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         public_fields = {
             "email": data.get("email"),
+            "username": data.get("username"),
             "name": data.get("name"),
             "lastname": data.get("lastname"),
             "rol": data.get("rol"),
