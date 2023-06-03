@@ -52,9 +52,7 @@ class HiredServiceView(viewsets.ModelViewSet):
     serializer_class = HiredServiceSerializer
     queryset = HiredService.objects.all()
 
-def send_email(reason, description, email):
-    subject = f'{reason}'
-    body = f'{description}'
+def send_email(subject, body, email):
     sender = "talentplac3@gmail.com"
     recipients = [f'{email}']
     password = "pcexjppuyawsxuvr"
@@ -106,6 +104,7 @@ def user_register(request):
         data = serializer.validated_data
         data['password'] = make_password(data['password'])
         serializer.save()
+        send_email("Registro exitoso", "Bienvenido a Talentplace", data['email'])
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
@@ -146,6 +145,7 @@ def hire_service(request):
     serializer = HiredServiceSerializer(data=data_request)
     if serializer.is_valid():
         serializer.save()
+        send_email("Contrato exitoso", "Has contratado un servicio", email)
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
@@ -181,6 +181,7 @@ def create_service(request):
     serializer = ServiceSerializer(data=data_request)
     if serializer.is_valid():
         serializer.save()
+        send_email("Creación exitosa", "Has creado un servicio", firstUser.email)
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
@@ -269,6 +270,7 @@ def modify_service(request):
         for field, value in data.items():
             setattr(servicio, field, value)
         servicio.save()
+        send_email("Modificación exitosa", "Has modificado un servicio", access_token.get('email'))
         return Response(serializer.data, status=201)
     return Response({'error': 'Servicio no encontrado'}, status=404)
 
@@ -287,6 +289,7 @@ def change_password(request):
         serializer = UserSerializer(first_user, data={'password': make_password(new_password)}, partial=True)
         if serializer.is_valid():
             serializer.save()
+            send_email("Cambio exitoso", "Has cambiado de contraseña.", email)
             return Response({'message': 'Contraseña cambiada exitosamente'}, status=200)
         return Response({'message': 'Problema al cambiar la contraseña', 'errors': serializer.errors}, status=400)
     return Response({'message': 'Usuario no encontrado'}, status=404)
@@ -314,6 +317,7 @@ def delete_service(request):
         serializer = ServiceSerializer(first_service, data={'available': False}, partial=True)
         if serializer.is_valid():
             serializer.save()
+            send_email("Eliminación exitosa", "Has eliminado un servicio.", access_token.get('email'))
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
     return Response({'error': 'Servicio no encontrado'}, status=404)
