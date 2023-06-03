@@ -24,6 +24,7 @@ urlpatterns = [
     path(f"{BASE_DIR}service/modify", modify_service, name='modifyservice'),
     path(f"{BASE_DIR}service/delete", delete_service, name='deleteservice'),
     path(f"{BASE_DIR}service/getbyuser", get_services_by_user, name='getservicesbyuser'),
+    path(f"{BASE_DIR}service/gethiredbyuser", get_hired_by_user, name='gethiredbyuser'),
     path(f"{BASE_DIR}users/chagepassword", change_password, name='changepassword'),
     path("docs/", include_docs_urls(title="Talentplace API"))
 ]

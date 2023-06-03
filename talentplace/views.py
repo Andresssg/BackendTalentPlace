@@ -172,13 +172,42 @@ def get_services_by_user(request):
     username = request.GET.get('username')
     if not username:
         return Response({"message": "No se proporcionaron parámetros de consulta"}, status=400)
-    serachUser = User.objects.filter(username=username)
-    firstUser = serachUser.first()
+    searchUser = User.objects.filter(username=username)
+    firstUser = searchUser.first()
+    if(firstUser is None):
+        return Response({"message": "No se encontró el usuario"}, status=404)
     idUser = firstUser.id_user
     searchServices = Service.objects.filter(offerer_id=idUser)
     serializer = ServiceSerializer(searchServices, many=True)
     return Response({'services': serializer.data}, status=200)
     
+@api_view(['GET'])
+@check_auth()
+@role_required([2, 3])
+def get_hired_by_user(request):
+
+    username = request.GET.get('username')
+
+    if not username:
+        return Response({"message": "No se proporcionaron parámetros de consulta"}, status=400)
+    
+    searchUser = User.objects.filter(username=username)
+    firstUser = searchUser.first()
+
+    if(firstUser is None):
+        return Response({"message": "No se encontró el usuario"}, status=404)
+    
+    idUser = firstUser.id_user
+    searchHiredServices = HiredService.objects.filter(applicant_id=idUser)
+    serializer = HiredServiceSerializer(searchHiredServices, many=True)
+
+    for item in serializer.data:
+        service_id = item["service_id"]
+        service = Service.objects.get(id_service=service_id)
+        offerer = service.offerer_id
+        item["full_name"] = f"{offerer.name} {offerer.lastname}"
+
+    return Response({'services': serializer.data}, status=200)
 
 @api_view(['PUT'])
 @check_auth()

@@ -36,6 +36,7 @@ class Service(models.Model):
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     service_name = models.CharField(max_length = 50)
     description = models.CharField(max_length = 200)
+    price = models.FloatField()
     evidence_img = models.TextField(blank=True)
     evidence_video = models.TextField(blank=True)
     available = models.BooleanField(default=True)
@@ -47,7 +48,6 @@ class HiredService(models.Model):
     id_hired_service = models.AutoField(primary_key = True)
     applicant_id = models.ForeignKey(User , on_delete=models.CASCADE)
     service_id = models.ForeignKey(Service , on_delete=models.CASCADE)
-    price = models.FloatField()
     request_date = models.DateField()
     
     def __str__(self):
