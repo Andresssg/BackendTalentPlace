@@ -2,6 +2,9 @@ from datetime import date
 from functools import wraps
 import base64
 
+import smtplib
+from email.mime.text import MIMEText
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 
@@ -48,6 +51,22 @@ class ServiceView(viewsets.ModelViewSet):
 class HiredServiceView(viewsets.ModelViewSet):
     serializer_class = HiredServiceSerializer
     queryset = HiredService.objects.all()
+
+def send_email(reason, description, email):
+    subject = f'{reason}'
+    body = f'{description}'
+    sender = "talentplac3@gmail.com"
+    recipients = [f'{email}']
+    password = "pcexjppuyawsxuvr"
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = ', '.join(recipients)
+    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    smtp_server.login(sender, password)
+    smtp_server.sendmail(sender, recipients, msg.as_string())
+    smtp_server.quit()
 
 def check_auth():
     def decorator(view_func):
