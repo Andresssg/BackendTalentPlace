@@ -130,8 +130,7 @@ def user_login(request):
 def hire_service(request):
     email = request.data.get("email")
     idService = request.data.get("service_id")
-    price = request.data.get("price")
-    if not email or not idService or not price:
+    if not email or not idService:
         return Response({'message': 'Los campos están incompletos'})
     searchUser = User.objects.filter(email = f'{email}')
     firstUser = searchUser.first()
@@ -182,8 +181,8 @@ def create_service(request):
     if serializer.is_valid():
         serializer.save()
         send_email("Creación exitosa", "Has creado un servicio", firstUser.email)
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+        return Response({"message": "Servicio creado exitosamente."}, status=201)
+    return Response({"message": "No se ha podido crear el servicio", "errors": serializer.errors}, status=400)
 
 @api_view(['GET'])
 @check_auth()
@@ -271,8 +270,8 @@ def modify_service(request):
             setattr(servicio, field, value)
         servicio.save()
         send_email("Modificación exitosa", "Has modificado un servicio", access_token.get('email'))
-        return Response(serializer.data, status=201)
-    return Response({'error': 'Servicio no encontrado'}, status=404)
+        return Response({"message": "Servicio modificado exitosamente."}, status=201)
+    return Response({"message": "No se ha podido modificar el servicio", "errors": serializer.errors}, status=400)
 
 @api_view(['PUT'])
 @check_auth()
