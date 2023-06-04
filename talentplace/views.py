@@ -231,6 +231,8 @@ def get_hired_by_user(request):
         service = Service.objects.get(id_service=service_id)
         offerer = service.offerer_id
         item["full_name"] = f"{offerer.name} {offerer.lastname}"
+        serviceSerializer = ServiceSerializer(service)
+        item["service"]= serviceSerializer.data
 
     return Response({'services': serializer.data}, status=200)
 
