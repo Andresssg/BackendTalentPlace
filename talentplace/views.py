@@ -124,6 +124,12 @@ def user_login(request):
     resUser = UserSerializer(user)
     return Response({"token": token, "user": resUser.data},status=200)
 
+@api_view(['GET'])
+def get_all_services(request):
+    services = Service.objects.filter(available=True)
+    serializer = ServiceSerializer(services, many=True)
+    return Response(serializer.data)
+
 @api_view(['POST'])
 @check_auth()
 @role_required([2, 3])
@@ -196,7 +202,7 @@ def get_services_by_user(request):
     if(firstUser is None):
         return Response({"message": "No se encontró el usuario"}, status=404)
     idUser = firstUser.id_user
-    searchServices = Service.objects.filter(offerer_id=idUser)
+    searchServices = Service.objects.filter(offerer_id=idUser).filter(available=True)
     serializer = ServiceSerializer(searchServices, many=True)
     return Response({'services': serializer.data}, status=200)
     
@@ -317,6 +323,6 @@ def delete_service(request):
         if serializer.is_valid():
             serializer.save()
             send_email("Eliminación exitosa", "Has eliminado un servicio.", access_token.get('email'))
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=400)
+            return Response({'message': 'Servicio eliminado exitosamente'}, status=200)
+        return Response({'message': 'Problema al eliminar el servicio', 'errors': serializer.errors}, status=400)
     return Response({'error': 'Servicio no encontrado'}, status=404)
