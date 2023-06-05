@@ -159,6 +159,8 @@ def get_all_services(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+@check_auth()
+@role_required([3])
 def get_all_users(request):
     users = User.objects
     serializer = UserSerializer(users, many=True)
