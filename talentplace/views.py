@@ -57,14 +57,42 @@ def send_email(subject, body, email):
     recipients = [f'{email}']
     password = "pcexjppuyawsxuvr"
 
-    msg = MIMEText(body)
+    image_url = 'https://static.wixstatic.com/media/9b1600_dcc519d299a448debea913eef5d31775~mv2.png/v1/fill/w_129,h_84,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/logo2.png'
+    message = f"""\
+    <html>
+    <head>
+        <title>{subject}</title>
+    </head>
+    <body>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="center" bgcolor="#f2f2f2" style="padding: 40px 0;">
+                    <img src="{image_url}" alt="Logo de la Empresa" width="200">
+                    <h2>{subject}</h2>
+                    <p>{body}</p>
+                    <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.</p>
+                    <p>Atentamente,</p>
+                    <p>El equipo de <span style="color: red;">Talent Place</span></p>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+    msg = MIMEText(message, 'html')
     msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = ', '.join(recipients)
-    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    smtp_server.login(sender, password)
-    smtp_server.sendmail(sender, recipients, msg.as_string())
-    smtp_server.quit()
+
+    try:
+        smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        smtp_server.login(sender, password)
+        smtp_server.sendmail(sender, recipients, msg.as_string())
+        smtp_server.quit()
+        print("El correo electrónico se envió correctamente.")
+    except Exception as e:
+        print("Error al enviar el correo electrónico:", str(e))
+
 
 def check_auth():
     def decorator(view_func):
@@ -104,7 +132,7 @@ def user_register(request):
         data = serializer.validated_data
         data['password'] = make_password(data['password'])
         serializer.save()
-        send_email("Registro exitoso", "Bienvenido a Talentplace", data['email'])
+        send_email("Registro exitoso en la plataforma", "Bienvenido a Talentplace", data['email'])
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
@@ -150,7 +178,7 @@ def hire_service(request):
     serializer = HiredServiceSerializer(data=data_request)
     if serializer.is_valid():
         serializer.save()
-        send_email("Contrato exitoso", "Has contratado un servicio", email)
+        send_email("Contrato de servicio exitoso", "Has contratado un servicio", email)
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
@@ -186,7 +214,7 @@ def create_service(request):
     serializer = ServiceSerializer(data=data_request)
     if serializer.is_valid():
         serializer.save()
-        send_email("Creación exitosa", "Has creado un servicio", firstUser.email)
+        send_email("Creación de servicio exitosa", "Has creado tu nuevo servicio, esperamos que sea muy apoyado", firstUser.email)
         return Response({"message": "Servicio creado exitosamente."}, status=201)
     return Response({"message": "No se ha podido crear el servicio", "errors": serializer.errors}, status=400)
 
@@ -277,7 +305,7 @@ def modify_service(request):
         for field, value in data.items():
             setattr(servicio, field, value)
         servicio.save()
-        send_email("Modificación exitosa", "Has modificado un servicio", access_token.get('email'))
+        send_email("Modificación exitosa de servicio", "Has modificado un servicio", access_token.get('email'))
         return Response({"message": "Servicio modificado exitosamente."}, status=201)
     return Response({"message": "No se ha podido modificar el servicio", "errors": serializer.errors}, status=400)
 
@@ -296,7 +324,7 @@ def change_password(request):
         serializer = UserSerializer(first_user, data={'password': make_password(new_password)}, partial=True)
         if serializer.is_valid():
             serializer.save()
-            send_email("Cambio exitoso", "Has cambiado de contraseña.", email)
+            send_email("Cambio de contraseña exitoso", "Has cambiado tu contraseña, si no fuiste tú contactate con soporte.", email)
             return Response({'message': 'Contraseña cambiada exitosamente'}, status=200)
         return Response({'message': 'Problema al cambiar la contraseña', 'errors': serializer.errors}, status=400)
     return Response({'message': 'Usuario no encontrado'}, status=404)
@@ -324,7 +352,7 @@ def delete_service(request):
         serializer = ServiceSerializer(first_service, data={'available': False}, partial=True)
         if serializer.is_valid():
             serializer.save()
-            send_email("Eliminación exitosa", "Has eliminado un servicio.", access_token.get('email'))
+            send_email("Eliminación exitosa del servicio", "Has eliminado un servicio.", access_token.get('email'))
             return Response({'message': 'Servicio eliminado exitosamente'}, status=200)
         return Response({'message': 'Problema al eliminar el servicio', 'errors': serializer.errors}, status=400)
     return Response({'error': 'Servicio no encontrado'}, status=404)
