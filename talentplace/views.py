@@ -177,6 +177,7 @@ def get_all_hired_services(request):
         applicant_id = item["applicant_id"]
         service = Service.objects.get(id_service=service_id)
         applicant = User.objects.get(id_user=applicant_id)
+        item["offerer_name"] = f"{service.offerer_id.name} {service.offerer_id.lastname}"
         item["service_name"] = f"{service.service_name}"
         item["applicant_name"]= f"{applicant.name} {applicant.lastname}"
     return Response(serializer.data)
