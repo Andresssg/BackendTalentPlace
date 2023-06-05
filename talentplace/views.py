@@ -158,6 +158,30 @@ def get_all_services(request):
     serializer = ServiceSerializer(services, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+@check_auth()
+@role_required([3])
+def get_all_users(request):
+    users = User.objects
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@check_auth()
+@role_required([3])
+def get_all_hired_services(request):
+    hiredServices = HiredService.objects
+    serializer = HiredServiceSerializer(hiredServices, many=True)
+    for item in serializer.data:
+        service_id = item["service_id"]
+        applicant_id = item["applicant_id"]
+        service = Service.objects.get(id_service=service_id)
+        applicant = User.objects.get(id_user=applicant_id)
+        item["offerer_name"] = f"{service.offerer_id.name} {service.offerer_id.lastname}"
+        item["service_name"] = f"{service.service_name}"
+        item["applicant_name"]= f"{applicant.name} {applicant.lastname}"
+    return Response(serializer.data)
+    
 @api_view(['POST'])
 @check_auth()
 @role_required([2, 3])

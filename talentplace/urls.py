@@ -19,12 +19,14 @@ urlpatterns = [
     path(f"{BASE_DIR}user/register", user_register, name='register'),
     path(f"{BASE_DIR}user/login", user_login, name='login'),
     path(f"{BASE_DIR}user/changepassword", change_password, name='changepassword'),
-    path(f"{BASE_DIR}service/getall", get_all_services, name='getall'),
+    path(f"{BASE_DIR}user/getall", get_all_users, name='getallusers'),
+    path(f"{BASE_DIR}service/getall", get_all_services, name='getallservices'),
     path(f"{BASE_DIR}service/create", create_service, name='createservice'),
     path(f"{BASE_DIR}service/hire", hire_service, name='hireservice'),
     path(f"{BASE_DIR}service/modify", modify_service, name='modifyservice'),
     path(f"{BASE_DIR}service/delete", delete_service, name='deleteservice'),
     path(f"{BASE_DIR}service/getbyuser", get_services_by_user, name='getservicesbyuser'),
     path(f"{BASE_DIR}service/gethiredbyuser", get_hired_by_user, name='gethiredbyuser'),
+    path(f"{BASE_DIR}service/getallhired", get_all_hired_services, name='getallhired'),
     path("docs/", include_docs_urls(title="Talentplace API"))
 ]
