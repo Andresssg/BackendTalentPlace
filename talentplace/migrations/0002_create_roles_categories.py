@@ -23,7 +23,7 @@ def create_admin(apps, schema_editor):
              gender='male',
              email='talentplac3@gmail.com',
              password=make_password('admin'),
-             rol_id=Rol.objects.get(pk=3))
+             rol=Rol.objects.get(pk=3))
     ])
 
 def create_categories(apps, schema_editor):

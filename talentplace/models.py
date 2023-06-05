@@ -25,7 +25,7 @@ class User(models.Model):
     gender = models.CharField(max_length=11)
     email = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
-    rol_id = models.ForeignKey(Rol , on_delete=models.CASCADE)
+    rol = models.ForeignKey(Rol , on_delete=models.CASCADE)
 
     def __str__(self):
         return self.id_user

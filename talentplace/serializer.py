@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username": data.get("username"),
             "name": data.get("name"),
             "lastname": data.get("lastname"),
-            "rol_id": data.get("rol_id"),
+            "rol": data.get("rol"),
         }
         return public_fields
 
