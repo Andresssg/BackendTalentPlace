@@ -134,7 +134,7 @@ def user_register(request):
         serializer.save()
         send_email("Registro exitoso en la plataforma", "Bienvenido a Talentplace", data['email'])
         return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+    return Response({'message': 'Problema al registrarse', 'errors': serializer.errors}, status=400)
 
 @api_view(['POST'])
 def user_login(request):
@@ -189,7 +189,7 @@ def hire_service(request):
     email = request.data.get("email")
     idService = request.data.get("service_id")
     if not email or not idService:
-        return Response({'message': 'Los campos están incompletos'})
+        return Response({'message': 'Los campos están incompletos'},status=400)
     searchUser = User.objects.filter(email = f'{email}')
     firstUser = searchUser.first()
     applicantId = firstUser.id_user
@@ -202,9 +202,12 @@ def hire_service(request):
     serializer = HiredServiceSerializer(data=data_request)
     if serializer.is_valid():
         serializer.save()
-        send_email("Contrato de servicio exitoso", "Has contratado un servicio", email)
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+        card = request.data.get("num_card")
+        name = request.data.get("service_name")
+        price = request.data.get("service_price")
+        send_email("Contrato de servicio exitoso", f"Has contratado el servicio {name} por un valor de {price} con la tarjeta ****{card}", email)
+        return Response({'message': 'Servicio contratado'}, status=201)
+    return Response({'message': 'Problema al contratar servicio', 'errors': serializer.errors}, status=400)
 
 @api_view(['POST'])
 @check_auth()
@@ -352,6 +355,18 @@ def change_password(request):
             return Response({'message': 'Contraseña cambiada exitosamente'}, status=200)
         return Response({'message': 'Problema al cambiar la contraseña', 'errors': serializer.errors}, status=400)
     return Response({'message': 'Usuario no encontrado'}, status=404)
+
+@api_view(['PUT'])
+@role_required([2, 3])
+@check_auth()
+def rate_service(request):
+    hiredService = HiredService.objects.get(id_hired_service=request.data.get('id_hired_service'))
+    rating = request.data.get('rating')
+    serializer = HiredServiceSerializer(hiredService,data={'rating': rating}, partial = True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Servicio calificado'}, status=200)
+    return Response({'message': 'Problema al calificar servicio', 'errors': serializer.errors}, status=400)
 
 @api_view(['DELETE'])
 @check_auth()

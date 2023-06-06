@@ -39,6 +39,7 @@ class Service(models.Model):
     price = models.FloatField()
     evidence_img = models.TextField(blank=True)
     evidence_video = models.TextField(blank=True)
+    average_rating = models.IntegerField(blank=True, null=True)
     available = models.BooleanField(default=True)
     
     def __str__(self):
@@ -48,7 +49,13 @@ class HiredService(models.Model):
     id_hired_service = models.AutoField(primary_key = True)
     applicant_id = models.ForeignKey(User , on_delete=models.CASCADE)
     service_id = models.ForeignKey(Service , on_delete=models.CASCADE)
+    rating = models.IntegerField(default=0)
     request_date = models.DateField()
     
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.service_id.average_rating = HiredService.objects.filter(service_id=self.service_id).aggregate(models.Avg('rating'))['rating__avg']
+        self.service_id.save()
+
     def __str__(self):
         return self.id_hired_service
