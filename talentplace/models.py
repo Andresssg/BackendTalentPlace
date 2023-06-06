@@ -39,7 +39,7 @@ class Service(models.Model):
     price = models.FloatField()
     evidence_img = models.TextField(blank=True)
     evidence_video = models.TextField(blank=True)
-    average_rating = models.IntegerField(default=0,blank=True)
+    average_rating = models.IntegerField(blank=True, null=True)
     available = models.BooleanField(default=True)
     
     def __str__(self):
@@ -54,7 +54,7 @@ class HiredService(models.Model):
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.service_id.average_rating = HiredService.objects.filter(service_id=self.service_id).aggregate(models.Avg('rating'))['average_rating']
+        self.service_id.average_rating = HiredService.objects.filter(service_id=self.service_id).aggregate(models.Avg('rating'))['rating__avg']
         self.service_id.save()
 
     def __str__(self):

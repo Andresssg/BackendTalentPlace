@@ -357,7 +357,13 @@ def change_password(request):
 @role_required([2, 3])
 @check_auth()
 def rate_service(request):
-    servicio = HiredService.objects.get(id_hired_service=request.data.get('id_hired_service'))
+    hiredService = HiredService.objects.get(id_hired_service=request.data.get('id_hired_service'))
+    rating = request.data.get('rating')
+    serializer = HiredServiceSerializer(hiredService,data={'rating': rating}, partial = True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Servicio calificado'}, status=200)
+    return Response({'message': 'Problema al calificar servicio', 'errors': serializer.errors}, status=400)
 
 @api_view(['DELETE'])
 @check_auth()
