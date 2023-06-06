@@ -353,6 +353,12 @@ def change_password(request):
         return Response({'message': 'Problema al cambiar la contraseña', 'errors': serializer.errors}, status=400)
     return Response({'message': 'Usuario no encontrado'}, status=404)
 
+@api_view(['PUT'])
+@role_required([2, 3])
+@check_auth()
+def rate_service(request):
+    servicio = HiredService.objects.get(id_hired_service=request.data.get('id_hired_service'))
+
 @api_view(['DELETE'])
 @check_auth()
 @role_required([1, 3])
