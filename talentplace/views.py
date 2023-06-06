@@ -189,7 +189,7 @@ def hire_service(request):
     email = request.data.get("email")
     idService = request.data.get("service_id")
     if not email or not idService:
-        return Response({'message': 'Los campos están incompletos'})
+        return Response({'message': 'Los campos están incompletos'},status=400)
     searchUser = User.objects.filter(email = f'{email}')
     firstUser = searchUser.first()
     applicantId = firstUser.id_user
@@ -205,7 +205,7 @@ def hire_service(request):
         card = request.data.get("num_card")
         name = request.data.get("service_name")
         price = request.data.get("service_price")
-        send_email("Contrato de servicio exitoso", "Has contratado el servicio f{name} por un valor de f{price} con la tarjeta **** f{card}", email)
+        send_email("Contrato de servicio exitoso", f"Has contratado el servicio {name} por un valor de {price} con la tarjeta ****{card}", email)
         return Response({'message': 'Servicio contratado'}, status=201)
     return Response({'message': 'Problema al contratar servicio', 'errors': serializer.errors}, status=400)
 
