@@ -134,7 +134,7 @@ def user_register(request):
         serializer.save()
         send_email("Registro exitoso en la plataforma", "Bienvenido a Talentplace", data['email'])
         return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+    return Response({'message': 'Problema al registrarse', 'errors': serializer.errors}, status=400)
 
 @api_view(['POST'])
 def user_login(request):
@@ -206,8 +206,8 @@ def hire_service(request):
         name = request.data.get("service_name")
         price = request.data.get("service_price")
         send_email("Contrato de servicio exitoso", "Has contratado el servicio f{name} por un valor de f{price} con la tarjeta **** f{card}", email)
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+        return Response({'message': 'Servicio contratado'}, status=201)
+    return Response({'message': 'Problema al contratar servicio', 'errors': serializer.errors}, status=400)
 
 @api_view(['POST'])
 @check_auth()
